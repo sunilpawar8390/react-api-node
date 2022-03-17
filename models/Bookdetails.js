@@ -6,7 +6,7 @@ const bookdetailSchema = new mongoose.Schema({
     Bookname : String,
     Category: { type: Schema.Types.ObjectId, ref: 'Categorydetailslkp' },
     Publisher: { type: Schema.Types.ObjectId, ref: 'Publisherdetailslkp' },
-    Quantity: Number,
+    quantity: Number,
     BDID: Number,
     IsActive: {type: Boolean, default: true},
 });

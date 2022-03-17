@@ -13,6 +13,53 @@ module.exports = (app) => {
       });
   });
 
+  app.get('/api/BooksDetails/:bookId', (req, res) => {
+    bookdetails.findOne({ BDID: req.params.bookId })
+    .populate('Category')
+    .populate('Publisher')
+    .exec((err, result) => {
+        return res.send(result);
+    });
+  });
+
+  app.post('/api/BooksDetails/edit', (req, res)=>{
+    categorydetails.findOne({Name: req.body.data.Category.Name}, (err, found1) => {
+      publsisherdetails.findOne({Name: req.body.data.Publisher.Name}, (err, found2) => {
+        bookdetails.findOne({ BDID: req.body.id }, (err, found3) => {
+          if(found3) {
+            found3.Bookname = req.body.data.Bookname;
+            found3.Category = found1._id;
+            found3.Publisher = found2._id;
+            found3.quantity = req.body.data.quantity;
+            return found3.save((err) => {
+              return res.send({status: 'OK'});
+            })
+          }
+        });
+      });
+    });
+  });
+
+  app.post('/api/BooksDetails/add', (req, res)=>{
+    categorydetails.findOne({Name: req.body.data.Category.Name}, (err, found1) => {
+      publsisherdetails.findOne({Name: req.body.data.Publisher.Name}, (err, found2) => {
+        bookdetails.findOne({ BDID: req.body.data.BDID }, (err, found3) => {
+          if(!found3) {
+            const newData = new bookdetails();
+            newData.BDID = req.body.data.BDID;
+            newData.Bookname = req.body.data.Bookname;
+            newData.Category = found1._id;
+            newData.Publisher = found2._id;
+            newData.quantity = req.body.data.quantity;
+            return newData.save((err) => {
+              return res.send({status: 'OK'});
+            })
+          }
+        });
+      });
+    });
+  });
+
   app.get("/api/BooksDetails/delete/:BookId", (req, res) => {
     bookdetails.findOne({BDID:  req.params.BookId}, (err, foundBookdetails) => {
         if(foundBookdetails) {
