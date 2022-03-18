@@ -32,7 +32,7 @@ module.exports = (app) => {
             found3.Publisher = found2._id;
             found3.quantity = req.body.data.quantity;
             return found3.save((err) => {
-              return res.send({status: 'OK'});
+              return res.send({status: 'Edit Book Succesfully'});
             })
           }
         });
@@ -51,9 +51,15 @@ module.exports = (app) => {
             newData.Category = found1._id;
             newData.Publisher = found2._id;
             newData.quantity = req.body.data.quantity;
-            return newData.save((err) => {
-              return res.send({status: 'OK'});
+            return newData.save((err) => { 
+              return res.send({status: 'New Book add Succesfully' })
+                
+               
             })
+          }
+          else
+          { 
+            return res.send({exist: `the Id is Already Exist ${ req.body.data.BDID }` })
           }
         });
       });
