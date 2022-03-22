@@ -3,6 +3,9 @@ const categorydetails = require("../models/Categorydetailslkp");
 const publsisherdetails = require("../models/Publisherdetailslkp");
 
 module.exports = (app) => {
+
+  //All Book Record GET API 
+
   app.get("/api/BooksDetails", (req, res) => {
     bookdetails
       .find({IsActive: 'true'})
@@ -13,6 +16,8 @@ module.exports = (app) => {
       });
   });
 
+  //get Book Data by ID API 
+
   app.get('/api/BooksDetails/:bookId', (req, res) => {
     bookdetails.findOne({ BDID: req.params.bookId })
     .populate('Category')
@@ -21,6 +26,8 @@ module.exports = (app) => {
         return res.send(result);
     });
   });
+
+  //Edit Book API 
 
   app.post('/api/BooksDetails/edit', (req, res)=>{
     categorydetails.findOne({Name: req.body.data.Category.Name}, (err, found1) => {
@@ -39,6 +46,8 @@ module.exports = (app) => {
       });
     });
   });
+
+  //Add New Book API 
 
   app.post('/api/BooksDetails/add', (req, res)=>{
     categorydetails.findOne({Name: req.body.data.Category.Name}, (err, found1) => {
@@ -66,6 +75,8 @@ module.exports = (app) => {
     });
   });
 
+  //Delete Book API 
+
   app.get("/api/BooksDetails/delete/:BookId", (req, res) => {
     bookdetails.findOne({BDID:  req.params.BookId}, (err, foundBookdetails) => {
         if(foundBookdetails) {
@@ -79,11 +90,37 @@ module.exports = (app) => {
   });
 
 
+  //Search Book API 
+  app.get("/api/BooksDetails/Search/:inputData", (req, res) => {
+    bookdetails.find({ Bookname : {"$regex": req.params.inputData,  "$options": "i"} })
+    .populate('Category')
+    .populate('Publisher')
+    .exec((err, result) => {
+        console.log(result);
+        return res.send(result);
+    });
+  });
+
+  //Search Category API 
+  // app.get("/api/BooksDetails/Search1/:inputDataCategory", (req, res) => {
+  //  bookdetails.find( { "Category.Name": { $regex: req.params.inputDataCategory } }) 
+   
+  //   .exec((err, result) => {
+  //       console.log(result);
+  //       return res.send(result);
+  //  // console.log(req.params.inputDataCategory);
+  //   });
+  // });
+
+//GET Catagory Details API 
+
   app.get("/api/categorydetails", (req, res) => {
     categorydetails.find().exec((err, categorydetails) => {
       return res.send(categorydetails);
     });
   });
+
+  //Get Publsher Deatisl API 
 
   app.get("/api/publisherdetails", (req, res) => {
     publsisherdetails.find().exec((err, publsisherdetails) => {
