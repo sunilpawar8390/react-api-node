@@ -110,7 +110,7 @@ module.exports = (app) => {
   //       return res.send(result);
   //  // console.log(req.params.inputDataCategory);
   //   });
-  // });
+  // }); 
 
 //GET Catagory Details API 
 
