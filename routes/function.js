@@ -12,6 +12,7 @@ module.exports = (app) => {
       .populate("Publisher")
       .exec((err, bookdetails) => {
         return res.send(bookdetails);
+        //arr
       });
   });
 
@@ -106,6 +107,37 @@ module.exports = (app) => {
     );
   });
 
+  //Combine all record Search API
+  app.post("/api/BooksDetails/allCombineData/", (req, res) => {
+    //console.log(req.body)
+    categorydetails.findOne({Name: req.body.Cat},(err, found1)=>{
+      
+      
+
+      publsisherdetails.findOne({Name : req.body.Pub}, (err, found2)=>{
+
+        bookdetails.find({ Bookname: { $regex: req.body.Book, $options: "i"}, Category: found1._id, Publisher:found2._id }, (err, found3)=>{
+          //bookdetails.find({$or:[ {Bookname: { $regex: req.body.Book, $options: "i"}}, {Category: found1._id}, {Publisher:found2._id }]}, (err, found3)=>{
+
+          console.log(found3);
+          //console.log(found1._id);
+          //console.log(found2._id);
+          return res.send(found3);
+        })
+        .populate("Category")
+        .populate("Publisher")
+        
+        
+        
+       
+      })
+    })
+    
+        //console.log(result);
+        //return res.send(result);
+     
+  });
+
   //Search Book API
   app.get("/api/BooksDetails/Search/:inputData", (req, res) => {
     bookdetails
@@ -113,6 +145,7 @@ module.exports = (app) => {
       .populate("Category")
       .populate("Publisher")
       .exec((err, result) => {
+
         //console.log(result);
         return res.send(result);
       });
