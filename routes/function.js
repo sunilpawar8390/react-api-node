@@ -107,35 +107,36 @@ module.exports = (app) => {
     );
   });
 
+  //filter function for search combine records
+const recordFiltering =(req, result)=>{
+return result.filter((item)=>{
+  let returnvalue = false;
+  // if(req.body.Book && req.body.Book.toString() !=== item.Bookname ) {
+    if(req.body.Book &&   req.body.Book.toString() === { $regex: item.Bookname, $options: "i" }) {
+    
+    returnvalue = true;
+
+  }
+  if(req.body.Cat && req.body.Cat.toString() === item.Category.Name ) returnvalue = true;
+  if(req.body.Pub && req.body.Pub.toString() === item.Publisher.Name ) returnvalue = true;
+    return returnvalue;
+
+});
+
+};
+
+
   //Combine all record Search API
   app.post("/api/BooksDetails/allCombineData/", (req, res) => {
-    //console.log(req.body)
-    categorydetails.findOne({Name: req.body.Cat},(err, found1)=>{
-      
-      
+    //console.log(req.body);
+  bookdetails.find({ IsActive: "true"})
+  .populate("Category")
+  .populate("Publisher")
+  .exec((err, result)=>{
+    let filteredData = recordFiltering(req, result);
+    return res.send(filteredData);
 
-      publsisherdetails.findOne({Name : req.body.Pub}, (err, found2)=>{
-
-        bookdetails.find({ Bookname: { $regex: req.body.Book, $options: "i"}, Category: found1._id, Publisher:found2._id }, (err, found3)=>{
-          //bookdetails.find({$or:[ {Bookname: { $regex: req.body.Book, $options: "i"}}, {Category: found1._id}, {Publisher:found2._id }]}, (err, found3)=>{
-
-          console.log(found3);
-          //console.log(found1._id);
-          //console.log(found2._id);
-          return res.send(found3);
-        })
-        .populate("Category")
-        .populate("Publisher")
-        
-        
-        
-       
-      })
-    })
-    
-        //console.log(result);
-        //return res.send(result);
-     
+  });
   });
 
   //Search Book API
@@ -145,7 +146,6 @@ module.exports = (app) => {
       .populate("Category")
       .populate("Publisher")
       .exec((err, result) => {
-
         //console.log(result);
         return res.send(result);
       });
@@ -155,17 +155,17 @@ module.exports = (app) => {
   app.get("/api/BooksDetails/Search1/:inputDataCategory", (req, res) => {
     categorydetails
       .find({ Name: { $regex: req.params.inputDataCategory } })
-      .exec((err, result, ) => {
-     
-         const data = result.map((bk) => {
-           bookdetails.find({Category: bk._id})
-           .populate("Category")
-           .populate("Publisher")
-           .exec((err, result1)=>{
-             console.log(result1);
-             return res.send(result1);
-           })
-        }); 
+      .exec((err, result) => {
+        const data = result.map((bk) => {
+          bookdetails
+            .find({ Category: bk._id })
+            .populate("Category")
+            .populate("Publisher")
+            .exec((err, result1) => {
+              console.log(result1);
+              return res.send(result1);
+            });
+        });
       });
   });
 
@@ -173,17 +173,17 @@ module.exports = (app) => {
   app.get("/api/BooksDetails/Search2/:inputDataPublisher", (req, res) => {
     publsisherdetails
       .find({ Name: { $regex: req.params.inputDataPublisher } })
-      .exec((err, result, ) => {
-     
-         const data = result.map((bk) => {
-           bookdetails.find({Publisher: bk._id})
-           .populate("Category")
-           .populate("Publisher")
-           .exec((err, result1)=>{
-             console.log(result1);
-             return res.send(result1);
-           })
-        }); 
+      .exec((err, result) => {
+        const data = result.map((bk) => {
+          bookdetails
+            .find({ Publisher: bk._id })
+            .populate("Category")
+            .populate("Publisher")
+            .exec((err, result1) => {
+              console.log(result1);
+              return res.send(result1);
+            });
+        });
       });
   });
 
